@@ -26,7 +26,7 @@ const getOneCube = (id) =>{
 }
 
 const saveCube = (cube) =>{
-    const cubes = getCubes().then(d=>{
+      return  getCubes().then(d=>{
         const data =  JSON.parse(d);
         data.push(cube);
         fs.writeFileSync(databaseFile, JSON.stringify(data))
