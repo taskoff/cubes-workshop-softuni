@@ -9,22 +9,29 @@ const getCubes = () => {
             console.log(err);
             return
         }
-        return JSON.parse(data);
+        return data;
     })
 
     return new Promise((resolve, reject)=>{
-        console.log(typeof cubes)
         resolve(cubes);
     });
 }
- const saveCube = (cube) =>{
-     const cubes = getCubes().then(d=>{
-         const data =  JSON.parse(d);
-         data.push(cube);
-         console.log(data)
-         fs.writeFileSync(databaseFile, JSON.stringify(data))
-     })
- }
+
+const getOneCube = (id) =>{
+    return  getCubes().then(d=>{
+        const cubes = JSON.parse(d);
+        return cubes.filter(c=>c.id === id)[0]
+    })
+
+}
+
+const saveCube = (cube) =>{
+    const cubes = getCubes().then(d=>{
+        const data =  JSON.parse(d);
+        data.push(cube);
+        fs.writeFileSync(databaseFile, JSON.stringify(data))
+    })
+}
  
 //  const cube1 = new Cube("test1", "description1", "https://ae01.alicdn.com/kf/HTB1CSddXRxRMKJjy0Fdq6yifFXa6/Gan-356-Air-SM-3x3-Black-Magic-cube-GAN-Air-SM-Magnetic-3x3x3-Speed-cube-gans.jpg", 1);
 //  const cube2 = new Cube("test2", "description2", "https://thingsidesire.com/wp-content/uploads/2018/06/Eco-Dark-Rubik%E2%80%99s-Cube2.jpg", 2);
@@ -41,5 +48,6 @@ const getCubes = () => {
 
 module.exports = {
     getCubes,
-    saveCube
+    saveCube,
+    getOneCube
 }
