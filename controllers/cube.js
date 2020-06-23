@@ -15,8 +15,14 @@ const getCube = async (id)=>{
     return cube;
 }
 
+const getCubeWithAccessories= async (id)=>{
+    const cube = await Cube.findById(id).populate('accessories').lean();
+    return cube
+}
+
 module.exports = {
     getCubes,
     saveCube,
-    getCube
+    getCube,
+    getCubeWithAccessories
 }

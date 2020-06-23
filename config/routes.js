@@ -1,5 +1,6 @@
-const {getCubes, saveCube, getCube} = require('../controllers/cube');
+const {getCubes, saveCube, getCube, getCubeWithAccessories} = require('../controllers/cube');
 const {saveAccessory, getAccesories} = require('../controllers/accessory');
+const cube = require('../models/cube');
 
 module.exports = (app) => {
     app.get('/',  async (req, res)=>{
@@ -29,7 +30,7 @@ module.exports = (app) => {
     })
     app.get('/details/:id', async (req, res)=>{
         const id = req.params.id;
-        const cube = await getCube(id);
+        const cube = await getCubeWithAccessories(id);
 
         res.render('details', {
             ...cube
@@ -53,10 +54,23 @@ module.exports = (app) => {
     app.get('/attach/accessory/:id', async (req, res)=>{
         const id = req.params.id;
         const cube = await getCube(id);
+        const accessories = await getAccesories();
+        const isNoFull = cube.accessories.length !== accessories.length
         res.render('attachAccessory',{
-            ...cube
+            ...cube,
+            accessories, 
+            isNoFull
         })
     })
+
+    app.post('/attach/accessory/:id', async (req, res)=>{
+        const id = req.params.id;
+        const {accessory} = req.body;
+        console.log(req.body)
+        await cube.findByIdAndUpdate(id, { $addToSet:{accessories: [req.body.accessory]} })
+        res.redirect(`/details/${id}`)
+    })
+
     app.get('*', (req, res)=>{
         res.render('404')
     })
