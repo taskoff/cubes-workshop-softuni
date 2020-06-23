@@ -1,13 +1,11 @@
-const {getCubes, getOneCube, saveCube} = require('../controllers/database');
-const { Cube } = require('../models/cube');
+const {getCubes, saveCube, getCube} = require('../controllers/cube');
 
 module.exports = (app) => {
-    app.get('/',  (req, res)=>{
-        getCubes().then(d=>{
-            res.render('index',{
-                cubes: JSON.parse(d),
-               
-            });
+    app.get('/',  async (req, res)=>{
+        const cubes = await getCubes()
+        
+        res.render('index', {
+            cubes
         })
        
     })
@@ -18,21 +16,23 @@ module.exports = (app) => {
     app.get('/create', (req, res)=>{
         res.render('create')
     })
-    app.post('/create', (req, res)=>{
+    app.post('/create', async (req, res)=>{
         const {
             name,
             description,
             imageUrl,
             difficultyLevel
         } = req.body;
-        const newCube = new Cube(name, description, imageUrl, difficultyLevel);
-        saveCube(newCube).then(d=>{res.redirect('/')})
+        await saveCube({name, description, imageUrl, difficulty: difficultyLevel})
+        res.redirect('/');
     })
-    app.get('/details/:id', (req, res)=>{
+    app.get('/details/:id', async (req, res)=>{
         const id = req.params.id;
-        getOneCube(id).then(d=>{
-            res.render('details', { ...d })
-        }) 
+        const cube = await getCube(id);
+
+        res.render('details', {
+            ...cube
+        })
     })
     app.get('*', (req, res)=>{
         res.render('404')
