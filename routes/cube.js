@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const config = require('../config/config');
+const jwt = require('jsonwebtoken');
 const {saveCube, getCubeWithAccessories} = require('../controllers/cube');
 
     
@@ -13,7 +15,9 @@ const {saveCube, getCubeWithAccessories} = require('../controllers/cube');
             imageUrl,
             difficultyLevel
         } = req.body;
-        await saveCube({name, description, imageUrl, difficulty: difficultyLevel})
+        const token = req.cookies['uinfo'];
+        const obj = jwt.verify(token, config.development.privateKey)
+        await saveCube({name, description, imageUrl, difficulty: difficultyLevel, creatorId: obj.userId})
         res.redirect('/');
     })
     router.get('/details/:id', async (req, res)=>{
